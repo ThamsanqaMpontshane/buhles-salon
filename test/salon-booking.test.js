@@ -197,9 +197,29 @@ describe("The Booking Salon", function () {
         assert.equal(theTotal, 331.5);
     })
 
-    // it("should be able to find the most valuable client", function() {
-    //     assert.equal(1, 2);
-    // })
+    it("should be able to find the most valuable client", async function() {
+        const myStylist = await booking.findStylist("01207440289");
+        const myStylistId = myStylist.id;
+        const treatment = await booking.findTreatment("PED");
+        const treatmentId = treatment.id;
+        const secondtreatment = await booking.findTreatment("MAN");
+        const secondTreatmentId = secondtreatment.id;
+        //use 3 clients
+        const date = new Date();
+        const theDate = moment(date).format("YYYY-MM-DD");
+        const time = moment(date).format("LT");
+        const roundTime = moment(time, "HH:mm").startOf('hour').format("HH:mm");
+        const client1 = await booking.findClient("0123456789");
+        const client2 = await booking.findClient("0456789012");
+        const client3 = await booking.findClient("0454904321");
+        await booking.makeBooking(client1.id, treatmentId, myStylistId, theDate, roundTime);
+        await booking.makeBooking(client2.id, treatmentId, myStylistId, theDate, roundTime);
+        await booking.makeBooking(client3.id, secondTreatmentId, myStylistId, theDate, roundTime);
+        await booking.makeBooking(client1.id, secondTreatmentId, myStylistId, theDate, roundTime);
+        const mostValuableClient = await booking.mostValuableClient()
+        console.log(mostValuableClient.first_name);
+        assert.deepEqual("Jane", mostValuableClient.first_name);
+    })
     // it("should be able to find the total commission for a given stylist", function() {
     //     assert.equal(1, 2);
     // })

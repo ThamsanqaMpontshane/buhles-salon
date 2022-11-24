@@ -38,6 +38,10 @@ function salonBooking(db) {
     async function totalIncomeForDay(date) {
         return db.oneOrNone('select sum(price) from bookings join treatments on bookings.treatment_id = treatments.id where the_date = $1', date);
     }
+    //most vauluable client
+    async function mostValuableClient() {
+        return db.oneOrNone('select clients.first_name, clients.phone_number, sum(price) from bookings join treatments on bookings.treatment_id = treatments.id join clients on bookings.client_id = clients.id group by clients.first_name, clients.phone_number order by sum desc limit 1');
+    }
 
     return {
         findStylist,
@@ -47,7 +51,8 @@ function salonBooking(db) {
         makeBooking,
         findClientBookings,
         findAllBookings,
-        totalIncomeForDay
+        totalIncomeForDay,
+        mostValuableClient
     }
 }
 
